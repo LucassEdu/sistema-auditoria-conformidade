@@ -1,0 +1,1 @@
+ALTER TABLE entidades_fiscalizadas ADD COLUMN data_registro DATE NOT NULL DEFAULT CURRENT_DATE;

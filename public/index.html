@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Sistema de Auditoria de Conformidade</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+  <div class="cabecalho-conteudo">
+    <img src="logo-boto.png" alt="Logo boto" class="logo-boto">
+    <h1>Sistema de Auditoria de Conformidade Operacional</h1>
+  </div>
+  <button id="btn-tema" class="btn-tema">🌙 Modo Escuro</button>
+</header>
+
+  <div class="container">
+    <aside class="sidebar">
+      <h2>Empresas Fiscalizadas</h2>
+      <input type="text" id="busca-empresa" class="input-busca" placeholder="Buscar empresa...">
+      <ul id="lista-empresas"></ul>
+
+      <button id="btn-nova-empresa">+ Nova Empresa</button>
+
+      <div id="modal-empresa" class="modal-oculto">
+        <div class="modal-conteudo">
+          <h3>Cadastrar Empresa</h3>
+          <form id="form-empresa">
+            <label>Razão Social</label>
+            <input type="text" id="input-razao-social" required>
+
+            <label>CNPJ</label>
+            <input type="text" id="input-cnpj" placeholder="00.000.000/0001-00" required>
+
+            <label>Tipo de Serviço</label>
+            <select id="input-tipo-servico" required>
+              <option value="urbano">Urbano</option>
+              <option value="intermunicipal">Intermunicipal</option>
+              <option value="fretamento">Fretamento</option>
+            </select>
+
+            <label>Status</label>
+            <select id="input-status">
+              <option value="ativa">Ativa</option>
+              <option value="inativa">Inativa</option>
+            </select>
+
+            <label>Data de Registro</label>
+            <input type="date" id="input-data-registro">
+
+            <div class="modal-botoes">
+              <button type="button" id="btn-cancelar">Cancelar</button>
+              <button type="submit">Salvar</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </aside>
+
+    <main class="detalhes">
+      <div id="detalhes-vazio">
+        <p>Selecione uma empresa ao lado para ver o histórico de conformidade.</p>
+      </div>
+
+      <div id="detalhes-conteudo" style="display: none;">
+
+        <div class="cabecalho-detalhes">
+  <div>
+    <h2 id="nome-empresa"></h2>
+    <p id="info-empresa"></p>
+  </div>
+</div>
+
+        <div class="cards-resumo">
+          <div class="card-resumo">
+            <span class="card-numero" id="resumo-veiculos">0</span>
+            <span class="card-label">Veículos Cadastrados</span>
+          </div>
+          <div class="card-resumo">
+            <span class="card-numero" id="resumo-infracoes-total">0</span>
+            <span class="card-label">Infrações Registradas</span>
+          </div>
+          <div class="card-resumo">
+            <span class="card-numero" id="resumo-infracoes-abertas">0</span>
+            <span class="card-label">Infrações em Aberto</span>
+          </div>
+          <div class="card-resumo">
+            <span class="card-numero" id="resumo-data-registro">—</span>
+            <span class="card-label">Registrada desde</span>
+          </div>
+        </div>
+
+        <div class="abas">
+          <button class="botao-aba ativo" data-aba="veiculos">Veículos Cadastrados</button>
+          <button class="botao-aba" data-aba="nc">Não-conformidades Registradas</button>
+        </div>
+
+        <div id="aba-veiculos" class="conteudo-aba ativo">
+          <div class="cabecalho-secao">
+            <input type="text" id="busca-veiculo-placa" class="input-busca-inline" placeholder="Buscar por placa...">
+            <button id="btn-novo-veiculo" class="btn-secundario">+ Novo Veículo</button>
+          </div>
+          <table id="tabela-veiculos">
+            <thead>
+              <tr>
+                <th>Placa</th>
+                <th>Tipo</th>
+                <th>Nº Serviço Regular</th>
+                <th>Regularizado</th>
+                <th>Data de Registro</th>
+              </tr>
+            </thead>
+            <tbody id="corpo-tabela-veiculos"></tbody>
+          </table>
+        </div>
+
+        <div id="aba-nc" class="conteudo-aba">
+          <div class="cabecalho-secao">
+            <div class="filtro-data">
+              <label>De:</label>
+              <input type="date" id="filtro-data-inicio">
+              <label>Até:</label>
+              <input type="date" id="filtro-data-fim">
+              <button id="btn-limpar-filtro" class="btn-secundario">Limpar</button>
+            </div>
+            <button id="btn-nova-nc" class="btn-secundario">+ Registrar Não-Conformidade</button>
+          </div>
+          <table id="tabela-nc">
+            <thead>
+              <tr>
+                <th>Norma</th>
+                <th>Descrição do achado</th>
+                <th>Fiscal</th>
+                <th>Placa</th>
+                <th>Severidade</th>
+                <th>Status</th>
+                <th>Data</th>
+                <th>Prazo</th>
+              </tr>
+            </thead>
+            <tbody id="corpo-tabela-nc"></tbody>
+          </table>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <div id="modal-nc" class="modal-oculto">
+    <div class="modal-conteudo">
+      <h3>Registrar Não-Conformidade</h3>
+      <form id="form-nc">
+        <label>Data da Inspeção</label>
+        <input type="date" id="nc-data-inspecao" required>
+
+        <label>Fiscal Responsável</label>
+        <input type="text" id="nc-fiscal" required>
+
+        <label>Veículo Fiscalizado (opcional)</label>
+        <select id="nc-veiculo">
+          <option value="">Nenhum veículo específico</option>
+        </select>
+
+        <label>Norma Violada</label>
+        <select id="nc-norma" required></select>
+
+        <label>Descrição do Achado</label>
+        <input type="text" id="nc-descricao" required>
+
+        <label>Severidade</label>
+        <select id="nc-severidade" required>
+          <option value="baixa">Baixa</option>
+          <option value="media">Média</option>
+          <option value="alta">Alta</option>
+        </select>
+
+        <label>Status</label>
+        <select id="nc-status">
+          <option value="aberta">Aberta</option>
+          <option value="corrigida">Corrigida</option>
+          <option value="vencida">Vencida</option>
+        </select>
+
+        <label>Prazo para Correção (opcional)</label>
+        <input type="date" id="nc-prazo">
+
+        <div class="modal-botoes">
+          <button type="button" id="btn-cancelar-nc">Cancelar</button>
+          <button type="submit">Registrar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="modal-veiculo" class="modal-oculto">
+    <div class="modal-conteudo">
+      <h3>Cadastrar Veículo</h3>
+      <form id="form-veiculo">
+        <label>Placa</label>
+        <input type="text" id="veiculo-placa" placeholder="ABC-1234" required>
+
+        <label>Tipo de Veículo</label>
+        <select id="veiculo-tipo" required>
+          <option value="onibus">Ônibus</option>
+          <option value="micro_onibus">Micro-ônibus</option>
+          <option value="van">Van</option>
+          <option value="taxi">Táxi</option>
+        </select>
+
+        <label>Número de Serviço Regular Rodoviário</label>
+        <input type="text" id="veiculo-numero-servico" required>
+
+        <label>Regularizado</label>
+        <select id="veiculo-regularizado">
+          <option value="true">Sim</option>
+          <option value="false">Não</option>
+        </select>
+
+        <label>Data de Registro</label>
+        <input type="date" id="veiculo-data-registro">
+
+        <div class="modal-botoes">
+          <button type="button" id="btn-cancelar-veiculo">Cancelar</button>
+          <button type="submit">Salvar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
